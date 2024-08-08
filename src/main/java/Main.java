@@ -1,3 +1,4 @@
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -16,26 +17,10 @@ public class Main {
 
         try {
             // Read integers from input1.txt
-            List<String> lines1 = Files.readAllLines(Paths.get("input1.txt"));
-            for (String line : lines1) {
-                try {
-                    int num = Integer.parseInt(line.trim());
-                    list1.add(num);
-                } catch (NumberFormatException e) {
-                    System.err.println("Invalid number in input1.txt: " + line);
-                }
-            }
+            List<String> lines1 = readLines("input1.txt", list1);
 
             // Read integers from input2.txt
-            List<String> lines2 = Files.readAllLines(Paths.get("input2.txt"));
-            for (String line : lines2) {
-                try {
-                    int num = Integer.parseInt(line.trim());
-                    list2.add(num);
-                } catch (NumberFormatException e) {
-                    System.err.println("Invalid number in input2.txt: " + line);
-                }
-            }
+            List<String> lines2 = readLines("input2.txt", list2);
 
             // Alternate merging the contents of list1 and list2
             int maxSize = Math.max(list1.size(), list2.size());
@@ -71,8 +56,27 @@ public class Main {
             }
             Files.write(Paths.get("common.txt"), commonStrings, StandardOpenOption.CREATE);
 
+        } catch (FileNotFoundException e) {
+            System.err.println("File not found: " + e.getMessage());
         } catch (IOException e) {
             System.err.println("I/O error occurred: " + e.getMessage());
+        }
+    }
+
+    private static List<String> readLines(String filename, List<Integer> list) throws IOException {
+        try {
+            List<String> lines = Files.readAllLines(Paths.get(filename));
+            for (String line : lines) {
+                try {
+                    int num = Integer.parseInt(line.trim());
+                    list.add(num);
+                } catch (NumberFormatException e) {
+                    System.err.println("Invalid number in " + filename + ": " + line);
+                }
+            }
+            return lines;
+        } catch (FileNotFoundException e) {
+            throw new FileNotFoundException("File " + filename + " not found.");
         }
     }
 }
